@@ -1,24 +1,25 @@
 <!DOCTYPE html>
-<html ng-app="AngelList">
+<html ng-app>
 	<head>
 		<title>Flybridge AngelList Tools</title>
-
 		<!--Import Parse, Angular, Underscore, JQuery-->
 		<script src="http://www.parsecdn.com/js/parse-1.2.13.min.js"></script>
-		<script src="../js/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.min.js"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
 		<script src="http://code.jquery.com/jquery-latest.min.js" ></script>
 		<!--Our JS file where all the magic happens-->
-		<script src="../js/angel.js" ></script>
+		<script src="js/angel.js" ></script>
 		<!--Pure CSS-->
 		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css">
 	</head>
 	<body>
-		<button class="pure-button pure-button-primary" ng-click="expressedInterest()">
-			Get Data
-		</button>
-		<button class="pure-button pure-button-primary" ng-click="expressedInterest()">
-			Download Data
-		</button>
+		<div ng-controller="AngelList">
+			<button class="pure-button pure-button-primary" ng-click="getData()">
+				Get Data
+			</button>
+			<button class="pure-button pure-button-primary" ng-click="downloadData()">
+				Download Data
+			</button>
+		</div>
 	</body>
 </html>
