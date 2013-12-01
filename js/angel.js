@@ -14,7 +14,7 @@ function AngelList($scope) {
 
 	//Pulls data from AngelList
 	$scope.getData = function () {
-
+		console.log('pressed get data');
 	}
 	
 	//Pulls one page of data from AngelList
@@ -28,6 +28,7 @@ function AngelList($scope) {
 
 	$scope.downloadData = function () {
 		//grabs most recent data pulled as an excel file
+		console.log('download data');
 	}
 
 
