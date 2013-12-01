@@ -6,11 +6,42 @@ Parse.Cloud.define("hello", function(request, response) {
 });
 
 //Call angellist api to grab one single startup -- will probably have to give index to grab from
+/*
+var getStartupAtIndex = function (index) {
+    console.log('blah');
+    Parse.Cloud.httpRequest({
+        url: ('https://api.angel.co/1/startups/' + index),
+        //params: {
+        //  q : 'Sean Plott'
+        //},
+        success: function(httpResponse) {
+            console.log(httpResponse.text);
+        },
+        error: function(httpResponse) {
+            console.error('Request failed with response code ' + httpResponse.status);
+        }
+    });    
+}
+*/
+
+
 Parse.Cloud.define("grabStartup", function(request, response) {
     //response.success("Grabbed Startup!");
+    //response.success('blahblah');
 
+    //response.success(getStartupAtIndex('6702'));
+    //var data = getStartupAtIndex('6702');
+
+    //var data = require('cloud/data.js');
+    //response.success(data.getData('6702'));
+    var name = require('cloud/name.js');
+    response.success(name.isACoolName('Fred'));
+
+    //var index = '6702';
+    //getStartupAtIndex('6702')
+    /*
     Parse.Cloud.httpRequest({
-        url: 'https://api.angel.co/1/startups/6702',
+        url: ('https://api.angel.co/1/startups/' + index),
         //params: {
         //  q : 'Sean Plott'
         //},
