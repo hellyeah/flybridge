@@ -1,13 +1,6 @@
 function AngelList($scope) {
 	//Initalize Parse
 	Parse.initialize("yMWD8vfQp9chO15d5dIYXUScK3zQdlHbmGNe8cD0", "frdAqsvZSZrUyzoTUN0pQXbiojdaPdNFwnSIn36q");
-	var TestObject = Parse.Object.extend("TestObject");
-	var testObject = new TestObject();
-	testObject.save({foo: "bar"}, {
-	  success: function(object) {
-	    alert("yay! it worked");
-	  }
-	});
 
 	//Initialize AngelList API
 
@@ -15,6 +8,14 @@ function AngelList($scope) {
 	//Pulls data from AngelList
 	$scope.getData = function () {
 		console.log('pressed get data');
+		Parse.Cloud.run('grabStartup', {}, {
+		  success: function(result) {
+		    // result is 'Hello world!'
+		    console.log(result);
+		  },
+		  error: function(error) {
+		  }
+		});
 	}
 	
 	//Pulls one page of data from AngelList
