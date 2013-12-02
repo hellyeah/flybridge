@@ -27,7 +27,8 @@ var getStartupAtIndex = function (index) {
 
 Parse.Cloud.define("grabStartup", function(request, response) {
     //grab this as the id of the last startup in our database
-    var lastStartup = 302282;
+    //https://angel.co/startups/301662
+    var lastStartup = 302651;
 
     Parse.Cloud.httpRequest({
         url: ('https://api.angel.co/1/startups/' + (lastStartup + request.params.currentStartup)),
@@ -46,18 +47,21 @@ Parse.Cloud.define("grabStartup", function(request, response) {
 });
 
 Parse.Cloud.define("grabAndSaveStartup", function(request, response) {
-    //grab this as the id of the last startup in our database
-    var lastStartup = 302282;
+    //grab this as the id of the last startup in our database -- set this on client-side to
+    var lastStartup = 302651;
+    //> 1 week ago
+    //var lastStartup = 298662;
+    var currentStartup = lastStartup + request.params.currentStartup;
 
     Parse.Cloud.httpRequest({
-        url: ('https://api.angel.co/1/startups/' + (lastStartup + request.params.currentStartup)),
+        url: ('https://api.angel.co/1/startups/' + currentStartup),
         //params: {
         //  q : 'Sean Plott'
         //},
         success: function(httpResponse) {
             var TestObject = Parse.Object.extend("Startup");
             var testObject = new TestObject();
-            testObject.save({foo: httpResponse.text}, {
+            testObject.save({fullData: httpResponse.text, idNum: currentStartup}, {
               success: function(object) {
                 response.success("yay! it worked");
               },
