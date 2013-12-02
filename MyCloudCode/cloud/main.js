@@ -26,22 +26,11 @@ var getStartupAtIndex = function (index) {
 
 
 Parse.Cloud.define("grabStartup", function(request, response) {
-    //response.success("Grabbed Startup!");
-    //response.success('blahblah');
+    //grab this as the id of the last startup in our database
+    var lastStartup = 302282;
 
-    //response.success(getStartupAtIndex('6702'));
-    //var data = getStartupAtIndex('6702');
-
-    //var data = require('cloud/data.js');
-    //response.success(data.getData('6702'));
-    var name = require('cloud/name.js');
-    response.success(name.isACoolName('Fred'));
-
-    //var index = '6702';
-    //getStartupAtIndex('6702')
-    /*
     Parse.Cloud.httpRequest({
-        url: ('https://api.angel.co/1/startups/' + index),
+        url: ('https://api.angel.co/1/startups/' + (lastStartup + request.params.currentStartup)),
         //params: {
         //  q : 'Sean Plott'
         //},
@@ -49,12 +38,39 @@ Parse.Cloud.define("grabStartup", function(request, response) {
             response.success(httpResponse.text);
         },
         error: function(httpResponse) {
-            console.error('Request failed with response code ' + httpResponse.status);
+            response.error('Request failed with response code ' + httpResponse.status);
         }
     });
+    //response.success(startups);
 
 });
 
+Parse.Cloud.define("grabAndSaveStartup", function(request, response) {
+    //grab this as the id of the last startup in our database
+    var lastStartup = 302282;
+
+    Parse.Cloud.httpRequest({
+        url: ('https://api.angel.co/1/startups/' + (lastStartup + request.params.currentStartup)),
+        //params: {
+        //  q : 'Sean Plott'
+        //},
+        success: function(httpResponse) {
+            var TestObject = Parse.Object.extend("TestObject");
+            var testObject = new TestObject();
+            testObject.save({foo: "bar"}, {
+              success: function(object) {
+                response.success("yay! it worked");
+              }
+            });
+            //response.success(httpResponse.text);
+        },
+        error: function(httpResponse) {
+            response.error('Request failed with response code ' + httpResponse.status);
+        }
+    });
+    //response.success(startups);
+
+});
 
 
 

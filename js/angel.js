@@ -8,14 +8,18 @@ function AngelList($scope) {
 	//Pulls data from AngelList
 	$scope.getData = function () {
 		console.log('pressed get data');
-		Parse.Cloud.run('grabStartup', {}, {
-		  success: function(result) {
-		    // result is 'Hello world!'
-		    console.log(result);
-		  },
-		  error: function(error) {
-		  }
-		});
+		var i = 0;
+		for(var i = 0; i < 3; i++) {
+			Parse.Cloud.run('grabStartup', { currentStartup: i }, {
+			  success: function(result) {
+			    console.log(result);
+			  },
+			  error: function(error) {
+			  	console.log(error);
+			  }
+			});			
+		}
+
 	}
 	
 	//Pulls one page of data from AngelList
