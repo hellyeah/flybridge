@@ -10,7 +10,7 @@ function AngelList($scope) {
 		console.log('pressed get data');
 		var i = 0;
 		for(var i = 0; i < 3; i++) {
-			Parse.Cloud.run('grabStartup', { currentStartup: i }, {
+			Parse.Cloud.run('grabAndSaveStartup', { currentStartup: i }, {
 			  success: function(result) {
 			    console.log(result);
 			  },

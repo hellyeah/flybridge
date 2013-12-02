@@ -55,11 +55,14 @@ Parse.Cloud.define("grabAndSaveStartup", function(request, response) {
         //  q : 'Sean Plott'
         //},
         success: function(httpResponse) {
-            var TestObject = Parse.Object.extend("TestObject");
+            var TestObject = Parse.Object.extend("Startup");
             var testObject = new TestObject();
-            testObject.save({foo: "bar"}, {
+            testObject.save({foo: httpResponse.text}, {
               success: function(object) {
                 response.success("yay! it worked");
+              },
+              error: function(error) {
+                response.error("didnt work");
               }
             });
             //response.success(httpResponse.text);
@@ -104,7 +107,7 @@ Parse.Cloud.beforeSave("Review", function(request, response) {
 });
 
 //can use this to format data on save
-Parse.Cloud.beforeSave("Startup", function(request, response) {
+Parse.Cloud.beforeSave("Critic", function(request, response) {
   var comment = request.object.get("comment");
   if (comment.length > 140) {
     // Truncate and add a ...
