@@ -137,7 +137,10 @@ function AngelList($scope) {
 
     $scope.JSON2CSV = function (objArray) {
         var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+        console.log('array in json2csv function:')
+        console.log(array);
         array = _.flatten(array);
+        //console.log(array);
 
         var str = '';
         var line = '';
@@ -145,7 +148,8 @@ function AngelList($scope) {
         //first row of json becomes table labels
         var head = array[0];
         
-        for (var index in $.parseJSON(array[0])) {
+        //for (var index in $.parseJSON(array[0])) {
+        for (var index in array[0]) {
             //line += index + ',';
             var value = index + "";
             line += '"' + value.replace(/"/g, '""') + '",';
@@ -157,7 +161,8 @@ function AngelList($scope) {
         for (var i = 0; i < array.length; i++) {
             var line = '';
 
-            var jsonArray = $.parseJSON(array[i]);
+            //var jsonArray = $.parseJSON(array[i]);
+            var jsonArray = array[i];
             for (var index in jsonArray) {
                 //line += jsonArray[index.toString()] + ',';
                 var value = jsonArray[index.toString()] + "";
@@ -176,10 +181,25 @@ function AngelList($scope) {
     };
 
     $scope.download = function(jsonVal) {
-        var json = $.parseJSON(JSON.stringify(jsonVal)); 
+        //var json = $.parseJSON(JSON.stringify(jsonVal));
+        console.log('original startups array stringified and parsed:')
+        console.log($.parseJSON(JSON.stringify($scope.startupsArray)));
+        //console.log('json:')
+        //console.log(json)
+        console.log('jsonVal:')
+        console.log(jsonVal)
+
+        //console.log('stringified jsonVal:')
+        //console.log(JSON.stringify(jsonVal))
+
+        console.log('parsed stringified jsonVal:')
+        console.log($.parseJSON(JSON.stringify(jsonVal)))
+
+
         //var json = jsonVal;
         //console.log(json);
-        var csv = $scope.JSON2CSV(json);
+        var csv = $scope.JSON2CSV(jsonVal);
+        //var csv = $scope.JSON2CSV($.parseJSON(JSON.stringify($scope.startupsArray)))
         window.open("data:text/csv;charset=utf-8," + escape(csv))
     };
 
@@ -188,7 +208,8 @@ function AngelList($scope) {
         console.log('download data');
         console.log($scope.startupsArray);
         console.log($scope.formattedStartupsArray);
-        $scope.download($scope.startupsArray);
+        //$scope.download($scope.startupsArray);
+        $scope.download($scope.formattedStartupsArray);
     }
 
 }
