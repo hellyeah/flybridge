@@ -11,21 +11,32 @@
 		<script src="js/angel.js" ></script>
 		<!--Pure CSS-->
 		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css">
+		<link rel="stylesheet" href="css/main.css">
 	</head>
 	<body>
 		<div ng-controller="AngelList">
-			<button class="pure-button pure-button-primary" ng-click="grabData()">
-				Grab Data
-			</button>
-			<button class="pure-button pure-button-primary" ng-click="grabTestData()">
-				Grab Test Data
-			</button>
-			<button class="pure-button pure-button-primary" ng-click="formatData()">
-				Format Data
-			</button>
-			<button class="pure-button pure-button-primary" ng-click="downloadData()">
-				Download Data
-			</button>
+			<div class="main-functions">
+				<button class="pure-button pure-button-primary" ng-click="grabData()">
+					Grab Data
+				</button>
+				<button class="pure-button pure-button-primary" ng-click="grabTestData()">
+					Grab Test Data
+				</button>
+				<button class="pure-button pure-button-primary" ng-click="formatData()">
+					Format Data
+				</button>
+				<button class="pure-button pure-button-primary" ng-click="downloadData()">
+					Download Data
+				</button>
+				<input type="text" ng-model="yourName" placeholder="Enter a name here">
+				<input type="text" ng-model="yourName" placeholder="Enter a name here">
+			</div>
+			<div class="secondary-functions">
+				<button class="pure-button pure-button-primary" ng-click="grabSpecificStartup()">
+					Grab Specific Startup
+				</button>
+				<input type="text" ng-model="startupNumber" placeholder="Enter startup number">
+			</div>
 		</div>
 	</body>
 </html>
