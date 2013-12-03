@@ -79,7 +79,7 @@ Parse.Cloud.define("grabAndSaveStartup", function(request, response) {
 
 });
 
-Parse.Cloud.define("saveStartup", function(request, response) {
+Parse.Cloud.define("saveFormattedStartup", function(request, response) {
     //save this request.params.currentStartup
     var currentStartup = request.params.currentStartup;
     var startupJSON = currentStartup;
@@ -157,6 +157,21 @@ Parse.Cloud.define("grabSpecificStartupFromParse", function(request, response) {
         query.first({
         success: function(object) {
           response.success(object);
+        },
+        error: function() {
+          response.error("startup lookup failed");
+        }
+    });
+});
+
+Parse.Cloud.define("grabAllFormattedStartups", function(request, response) {
+    //grab startup from our database with id: request.params.startupId
+    var query = new Parse.Query("FormattedStartup");
+        //query.equalTo("idNum", parseInt(request.params.startupId));
+        //response.success(parseInt(request.params.startupId));
+        query.find({
+        success: function(results) {
+          response.success(results);
         },
         error: function() {
           response.error("startup lookup failed");
