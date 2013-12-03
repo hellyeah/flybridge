@@ -79,6 +79,27 @@ Parse.Cloud.define("grabAndSaveStartup", function(request, response) {
 
 });
 
+Parse.Cloud.define("grabSpecificStartup", function(request, response) {
+    //grab this as the id of the last startup in our database
+    //https://angel.co/startups/301662
+    //var lastStartup = 302651;
+
+    Parse.Cloud.httpRequest({
+        url: ('https://api.angel.co/1/startups/' + request.params.currentStartup),
+        //params: {
+        //  q : 'Sean Plott'
+        //},
+        success: function(httpResponse) {
+            response.success(httpResponse.text);
+        },
+        error: function(httpResponse) {
+            response.error('Request failed with response code ' + httpResponse.status);
+        }
+    });
+    //response.success(startups);
+
+});
+
 
 
 //Just an example of passing in params as request.params.[parameter]
