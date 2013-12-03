@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "_default": {
+            "link": "flybridge_AL"
+        }, 
+        "flybridge_AL": {
+            "applicationId": "yMWD8vfQp9chO15d5dIYXUScK3zQdlHbmGNe8cD0", 
+            "masterKey": "7XLbVOAzP30AP0iQEHdhjT8mRs1fnmkpe9EiFSJ2"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.13"
+    }
+}
