@@ -84,45 +84,48 @@ Parse.Cloud.define("saveStartup", function(request, response) {
     var currentStartup = request.params.currentStartup;
     var startupJSON = currentStartup;
     //response.success(startupJSON.id);
-
-    var TestObject = Parse.Object.extend("FormattedStartup");
-    var testObject = new TestObject();
-    testObject.save({
-                community_profile: startupJSON.community_profile,
-                angellist_url: startupJSON.angellist_url,
-                //still needs work
-                company_type: startupJSON.company_type,
-                company_url: startupJSON.company_url,
-                created_at: startupJSON.created_at,
-                crunchbase_url: startupJSON.crunchbase_url,
-                follower_count: startupJSON.follower_count,
-                hidden: startupJSON.hidden,
-                high_concept: startupJSON.high_concept,
-                idNum: startupJSON.id,
-                //still needs work
-                locations: startupJSON.locations,
-                logo_url: startupJSON.logo_url,
-                //**Still needs work
-                markets: startupJSON.markets,
-                name: startupJSON.name,
-                product_desc: startupJSON.product_desc,
-                quality: startupJSON.quality,
-                //still needs work
-                screenshots: startupJSON.screenshots,
-                status: startupJSON.status,
-                thumb_url: startupJSON.thumb_url,
-                twitter_url: startupJSON.twitter_url,
-                updated_at: startupJSON.updated_at,
-                video_url: startupJSON.video_url
-            }, {
-      success: function(object) {
-        response.success("yay! it worked");
-      },
-      error: function(error) {
-        response.error("didnt work");
-      }
-    });
-
+    if (startupJSON.hidden) {
+        response.error('startup hidden');
+    }
+    else {
+        var TestObject = Parse.Object.extend("FormattedStartup");
+        var testObject = new TestObject();
+        testObject.save({
+                    community_profile: startupJSON.community_profile,
+                    angellist_url: startupJSON.angellist_url,
+                    //still needs work
+                    company_type: startupJSON.company_type,
+                    company_url: startupJSON.company_url,
+                    created_at: startupJSON.created_at,
+                    crunchbase_url: startupJSON.crunchbase_url,
+                    follower_count: startupJSON.follower_count,
+                    //hidden: startupJSON.hidden,
+                    high_concept: startupJSON.high_concept,
+                    idNum: startupJSON.id,
+                    //still needs work
+                    locations: startupJSON.locations,
+                    logo_url: startupJSON.logo_url,
+                    //**Still needs work
+                    markets: startupJSON.markets,
+                    name: startupJSON.name,
+                    product_desc: startupJSON.product_desc,
+                    quality: startupJSON.quality,
+                    //still needs work
+                    screenshots: startupJSON.screenshots,
+                    status: startupJSON.status,
+                    thumb_url: startupJSON.thumb_url,
+                    twitter_url: startupJSON.twitter_url,
+                    updated_at: startupJSON.updated_at,
+                    video_url: startupJSON.video_url
+                }, {
+          success: function(object) {
+            response.success("yay! it worked");
+          },
+          error: function(error) {
+            response.error("didnt work");
+          }
+        });
+    }
 });
 
 Parse.Cloud.define("grabSpecificStartup", function(request, response) {
@@ -144,6 +147,21 @@ Parse.Cloud.define("grabSpecificStartup", function(request, response) {
     });
     //response.success(startups);
 
+});
+
+Parse.Cloud.define("grabSpecificStartupFromParse", function(request, response) {
+    //grab startup from our database with id: request.params.startupId
+    var query = new Parse.Query("FormattedStartup");
+        query.equalTo("idNum", parseInt(request.params.startupId));
+        //response.success(parseInt(request.params.startupId));
+        query.first({
+        success: function(object) {
+          response.success(object);
+        },
+        error: function() {
+          response.error("startup lookup failed");
+        }
+    });
 });
 
 

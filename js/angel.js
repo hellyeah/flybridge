@@ -61,8 +61,20 @@ function AngelList($scope) {
 
     $scope.grabSpecificStartup = function () {
         console.log('pressed grab data');
-        var i = 0;
         Parse.Cloud.run('grabSpecificStartup', { currentStartup: $scope.startupNumber }, {
+          success: function(result) {
+            console.log(result);
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });         
+    }
+
+    $scope.grabSpecificStartupFromParse = function () {
+        console.log('pressed grab data');
+        console.log($scope.formattedStartupNumber);
+        Parse.Cloud.run('grabSpecificStartupFromParse', { startupId: $scope.formattedStartupNumber }, {
           success: function(result) {
             console.log(result);
           },
@@ -134,7 +146,9 @@ function AngelList($scope) {
         var head = array[0];
         
         for (var index in $.parseJSON(array[0])) {
-            line += index + ',';
+            //line += index + ',';
+            var value = index + "";
+            line += '"' + value.replace(/"/g, '""') + '",';
         }
 
         line = line.slice(0, -1);
@@ -145,7 +159,9 @@ function AngelList($scope) {
 
             var jsonArray = $.parseJSON(array[i]);
             for (var index in jsonArray) {
-                line += jsonArray[index.toString()] + ',';
+                //line += jsonArray[index.toString()] + ',';
+                var value = jsonArray[index.toString()] + "";
+                line += '"' + value.replace(/"/g, '""') + '",';
             }
 
             line = line.slice(0, -1);
@@ -170,6 +186,8 @@ function AngelList($scope) {
     $scope.downloadData = function () {
         //grabs most recent data pulled as an excel file
         console.log('download data');
+        console.log($scope.startupsArray);
+        console.log($scope.formattedStartupsArray);
         $scope.download($scope.startupsArray);
     }
 

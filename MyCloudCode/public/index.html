@@ -1,9 +1,42 @@
-
-<html>
-  <head>
-    <title>My ParseApp site</title>
-  </head>
-  <body>
-    Hello World!
-  </body>
+<!DOCTYPE html>
+<html ng-app>
+	<head>
+		<title>Flybridge AngelList Tools</title>
+		<!--Import Parse, Angular, Underscore, JQuery-->
+		<script src="http://www.parsecdn.com/js/parse-1.2.13.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+		<script src="http://code.jquery.com/jquery-latest.min.js" ></script>
+		<!--Our JS file where all the magic happens-->
+		<script src="js/angel.js" ></script>
+		<!--Pure CSS-->
+		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css">
+		<link rel="stylesheet" href="css/main.css">
+	</head>
+	<body>
+		<div ng-controller="AngelList">
+			<div class="main-functions">
+				<button class="pure-button pure-button-primary" ng-click="grabData()">
+					Grab Data
+				</button>
+				<button class="pure-button pure-button-primary" ng-click="grabTestData()">
+					Grab Test Data
+				</button>
+				<button class="pure-button pure-button-primary" ng-click="formatData()">
+					Format Data
+				</button>
+				<button class="pure-button pure-button-primary" ng-click="downloadData()">
+					Download Data
+				</button>
+				<input type="text" ng-model="yourName" placeholder="Enter a name here">
+				<input type="text" ng-model="yourName" placeholder="Enter a name here">
+			</div>
+			<div class="secondary-functions">
+				<button class="pure-button pure-button-primary" ng-click="grabSpecificStartup()">
+					Grab Specific Startup
+				</button>
+				<input type="text" ng-model="startupNumber" placeholder="Enter startup number">
+			</div>
+		</div>
+	</body>
 </html>
