@@ -16,30 +16,37 @@
 	<body>
 		<div ng-controller="AngelList">
 			<div class="main-functions">
-				<button class="pure-button pure-button-primary" ng-click="grabFormattedStartups()">
-					Grab Startups
+				<button class="pure-button pure-button-primary" ng-click="download()">
+					Download Data
 				</button>
-				<button class="pure-button pure-button-primary" ng-click="grabTestData()">
+				<button class="pure-button pure-button-primary" ng-click="grabFreshTestData()">
 					Grab Test Data
 				</button>
 				<button class="pure-button pure-button-primary" ng-click="formatData()">
 					Format Data
 				</button>
-				<button class="pure-button pure-button-primary" ng-click="downloadData()">
-					Download Data
-				</button>
-				<input type="text" ng-model="yourName" placeholder="Enter a name here">
-				<input type="text" ng-model="yourName" placeholder="Enter a name here">
+				<div class="grab-startups">
+					<button class="pure-button pure-button-primary" ng-click="grabSomeFormattedStartups()">
+						Grab Startups
+					</button>
+					<input type="text" ng-model="userNumberOfStartups" placeholder="# of startups to download">
+				</div>
+				<div class="pull-angellist">
+					<button class="pure-button pure-button-primary" ng-click="pullAngelListData()">
+						Pull from AngelList
+					</button>
+					<input type="text" ng-model="userNumberOfAL" placeholder="# of startups to pull from AL">
+				</div>
 			</div>
 			<div class="secondary-functions">
 				<button class="pure-button pure-button-primary" ng-click="grabSpecificStartup()">
-					Grab Specific Startup
+					Grab Specific Startup From AngelList
 				</button>
-				<input type="text" ng-model="startupNumber" placeholder="Enter startup number">
+				<input type="text" ng-model="startupNumber" placeholder="Enter angellist id">
 				<button class="pure-button pure-button-primary" ng-click="grabSpecificStartupFromParse()">
-					Grab Specific Startup From Parse
+					Grab Specific Formatted Startup From Parse
 				</button>
-				<input type="text" ng-model="formattedStartupNumber" placeholder="Enter formatted startup number">
+				<input type="text" ng-model="formattedStartupNumber" placeholder="Enter angellist id">
 			</div>
 		</div>
 	</body>

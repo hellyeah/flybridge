@@ -7,14 +7,59 @@ function AngelList($scope) {
     //Initialize Data Array to test converter
     $scope.startupsArray = [];
     $scope.formattedStartupsArray = [];
+    //default
+    $scope.lastStartupInParse = 302500;
+    $scope.lastFormattedStartup = 302500;
+
+    $scope.numberOfStartups = function () {
+        if ($scope.userNumberOfStartups == undefined) {
+            return 3;
+        }
+        else {
+            return $scope.userNumberOfStartups;
+        }
+    }
+
+    $scope.numberOfAL = function () {
+        if ($scope.userNumberOfAL == undefined) {
+            return 3;
+        }
+        else {
+            return $scope.userNumberOfAL;
+        }
+    }
+
+    $scope.setLastStartups = function () {
+        Parse.Cloud.run('grabLastStartup', {}, {
+          success: function(result) {
+            console.log('last startup: ' + result);
+            $scope.lastStartupInParse = result;
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });  
+
+        Parse.Cloud.run('grabLastFormattedStartup', {}, {
+          success: function(result) {
+            console.log('last formatted startup: ' + result);
+            $scope.lastFormattedStartup = result;
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });    
+    }
+
+    $scope.setLastStartups();
 
 
-    //Pulls data from AngelList
-    $scope.grabData = function () {
-        console.log('pressed grab data');
+    //Pulls data from AngelList -- n is how many items we want to pull -- 302500
+    $scope.pullSomeAngelListData = function (n) {
         var i = 0;
-        for(var i = 0; i < 3; i++) {
-            Parse.Cloud.run('grabAndSaveStartup', { currentStartup: i }, {
+        for(var i = 0; i < n; i++) {
+            console.log(i + parseInt($scope.lastStartupInParse));
+            Parse.Cloud.run('grabAndSaveStartup', { currentStartup: (i + parseInt($scope.lastStartupInParse)) }, {
               success: function(result) {
                 console.log(result);
               },
@@ -25,7 +70,29 @@ function AngelList($scope) {
         }
     }
 
-    $scope.grabFormattedStartups = function () {
+    $scope.pullAngelListData = function () {
+        console.log('pressed grab data');
+        $scope.pullSomeAngelListData($scope.numberOfAL())
+    }
+
+    $scope.grabInitialFormattedStartupsFromParse = function () {
+        console.log('grabbing formatted startups');
+        Parse.Cloud.run('grabAllFormattedStartups', {}, {
+          success: function(result) {
+            //console.log(result);
+            //console.log(result[0].attributes);
+            console.log(_.map(result, function(rawParseStartup) { return rawParseStartup.attributes; }));
+            //$scope.lastStartupInParse = result[0].attributes.idNum;
+            $scope.formattedStartupsArray = _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
+            return _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });
+    }
+
+    $scope.grabAllFormattedStartups = function () {
         console.log('grabbing formatted startups');
         Parse.Cloud.run('grabAllFormattedStartups', {}, {
           success: function(result) {
@@ -40,6 +107,40 @@ function AngelList($scope) {
         });  
     }
 
+    $scope.grabSomeFormattedStartupsFromParse = function (limit) {
+        console.log('grabbing formatted startups');
+        //will have to get paginated results working -- maybe move logic here and pass in skip on top of limit
+        Parse.Cloud.run('grabNumberOfFormattedStartups', {numberOfStartups: limit}, {
+          success: function(result) {
+            //console.log(_.map(result, function(rawParseStartup) { return rawParseStartup.attributes; }));
+            return _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
+            //$scope.formattedStartupsArray = [];
+            //$scope.formattedStartupsArray = _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });  
+    }
+
+    $scope.grabSomeFormattedStartups = function () {
+        console.log('grabbing formatted startups');
+        //will have to get paginated results working -- maybe move logic here and pass in skip on top of limit
+        Parse.Cloud.run('grabNumberOfFormattedStartups', {numberOfStartups: $scope.numberOfStartups()}, {
+          success: function(result) {
+            console.log(_.map(result, function(rawParseStartup) { return rawParseStartup.attributes; }));
+
+            $scope.formattedStartupsArray = [];
+            $scope.formattedStartupsArray = _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });  
+    }
+
+    $scope.grabInitialFormattedStartupsFromParse();
+
     $scope.saveFormattedStartup = function (startup) {
         Parse.Cloud.run('saveFormattedStartup', { currentStartup: startup }, {
           success: function(result) {
@@ -51,14 +152,15 @@ function AngelList($scope) {
         });  
     }
 
-    $scope.grabTestData = function () {
-        var GameScore = Parse.Object.extend("Startup");
+    $scope.grabFreshTestData = function () {
+        var GameScore = Parse.Object.extend("RawStartups");
         var query = new Parse.Query(GameScore);
         //**order the query by idNum?
         //query.equalTo("playerName", "Dan Stemkoski");
+        query.greaterThan("idNum", parseInt($scope.lastFormattedStartup));
         query.find({
           success: function(results) {
-            alert("Successfully retrieved " + results.length + " scores.");
+            alert("Successfully retrieved " + results.length + " startups.");
             // Do something with the returned Parse.Object values
             for (var i = 0; i < results.length; i++) { 
                 //console.log(results[i].get('fullData'));
@@ -110,6 +212,7 @@ function AngelList($scope) {
         for (var i = 0; i < data.length; i++) {
             var startupJSON = JSON.parse(data[i]);
             //console.log(startupJSON);
+            /*
             $scope.formattedStartupsArray[i] = 
             {
                 community_profile: startupJSON.community_profile,
@@ -139,7 +242,8 @@ function AngelList($scope) {
                 updated_at: startupJSON.updated_at,
                 video_url: startupJSON.video_url
             }
-            console.log($scope.formattedStartupsArray[i]);
+            */
+            //console.log($scope.formattedStartupsArray[i]);
             $scope.saveFormattedStartup(startupJSON);
         }
         //console.log($scope.formattedStartupsArray);
@@ -147,6 +251,8 @@ function AngelList($scope) {
     }
 
     $scope.formatData = function () {
+        console.log('hit format data');
+        console.log($scope.startupsArray);
         $scope.formatAndSaveData($scope.startupsArray);
     }
 
@@ -186,15 +292,23 @@ function AngelList($scope) {
         var csv = JSON2CSV(json);
     };
 
-    $scope.download = function(jsonVal) {
+    $scope.downloadData = function(jsonVal) {
         var csv = $scope.JSON2CSV(jsonVal);
-        window.open("data:text/csv;charset=utf-8," + escape(csv))
+        window.open("data:text/csv;charset=utf-8," + escape(csv));
     };
 
-    $scope.downloadData = function () {
+    $scope.download = function () {
         //grabs most recent data pulled as an excel file
+        console.log('hit download');
+        console.log($scope.formattedStartupsArray);
+        $scope.downloadData($scope.formattedStartupsArray);
+    };
+
+    $scope.pullAndDownloadData = function () {
+        console.log('grab formatted startups');
+        $scope.grabFormattedStartups();
         console.log('download data');
-        $scope.download($scope.formattedStartupsArray);
-    }
+        $scope.downloadData();
+    };
 
 }
