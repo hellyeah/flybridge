@@ -129,7 +129,13 @@ Parse.Cloud.define("saveFormattedStartup", function(request, response) {
         var testObject = new TestObject();
         testObject.save({
                     community_profile: startupJSON.community_profile,
+                    name: startupJSON.name,
                     angellist_url: startupJSON.angellist_url,
+                    high_concept: startupJSON.high_concept,
+                    product_desc: startupJSON.product_desc,
+                    quality: startupJSON.quality,
+                    markets: tags.getTags(startupJSON.markets),
+                    locations: tags.getTags(startupJSON.locations),
                     //still needs work
                     company_type: tags.getTags(startupJSON.company_type),
                     company_url: startupJSON.company_url,
@@ -137,16 +143,11 @@ Parse.Cloud.define("saveFormattedStartup", function(request, response) {
                     crunchbase_url: startupJSON.crunchbase_url,
                     follower_count: startupJSON.follower_count,
                     //hidden: startupJSON.hidden,
-                    high_concept: startupJSON.high_concept,
                     idNum: startupJSON.id,
                     //still needs work
-                    locations: tags.getTags(startupJSON.locations),
                     logo_url: startupJSON.logo_url,
                     //**Still needs work
-                    markets: tags.getTags(startupJSON.markets),
-                    name: startupJSON.name,
                     product_desc: startupJSON.product_desc,
-                    quality: startupJSON.quality,
                     //still needs work
                     screenshots: tags.getTags(startupJSON.screenshots),
                     status: startupJSON.status,
@@ -206,7 +207,9 @@ Parse.Cloud.define("grabAllFormattedStartups", function(request, response) {
     var query = new Parse.Query("FormattedStartup");
         //query.equalTo("idNum", parseInt(request.params.startupId));
         //response.success(parseInt(request.params.startupId));
+    query.limit(1000);
     query.descending("idNum");
+    query.skip(1000*request.params.iteration);
     query.find({
         success: function(results) {
           response.success(results);

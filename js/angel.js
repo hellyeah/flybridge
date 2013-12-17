@@ -94,7 +94,7 @@ function AngelList($scope) {
 
     $scope.grabAllFormattedStartups = function () {
         console.log('grabbing formatted startups');
-        Parse.Cloud.run('grabAllFormattedStartups', {}, {
+        Parse.Cloud.run('grabAllFormattedStartups', {iteration: 0}, {
           success: function(result) {
             //console.log(result);
             //console.log(result[0].attributes);
