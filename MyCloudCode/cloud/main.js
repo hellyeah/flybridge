@@ -117,11 +117,12 @@ Parse.Cloud.define("saveFormattedStartup", function(request, response) {
 
     var currentStartup = request.params.currentStartup;
     var startupJSON = currentStartup;
+    //response.success(startupJSON);
     //**should getTags return a string of comma separated values or an array?
 
     //response.success(startupJSON.id);
     if (startupJSON.hidden) {
-        response.error('startup hidden');
+        response.success('startup hidden');
     }
     else {
         var TestObject = Parse.Object.extend("FormattedStartup");
@@ -292,4 +293,189 @@ Parse.Cloud.beforeSave("Critic", function(request, response) {
   }
   response.success();  
 });
+
+//background job to grab data from AngelList Every Day and then format it
+Parse.Cloud.job("pullRawData", function(request, status) {
+    // Set up to modify user data
+    //Parse.Cloud.useMasterKey();
+    //var counter = 0;
+    // Query for all users
+    var n = 1000;
+//    var count = 0;
+    Parse.Cloud.run('grabLastStartup', {}, {
+        success: function(result) {
+            var count = 1;
+            //status.message("last startup: " + result);
+            for(var i = 1; i < n; i++) {
+                var currentStartup = parseInt((parseInt(result)+i));
+                Parse.Cloud.run('grabAndSaveStartup', { currentStartup: currentStartup }, {
+                  success: function(result) {
+                    count++;
+                    console.log(result);
+                    //status.message(result);
+                    if(count == n) {
+                        status.success('loaded ' + count + ' startups');
+                    }
+                  },
+                  error: function(error) {
+                    count++;
+                    console.log(error);
+                    if(count == n) {
+                        status.success('loaded ' + count + ' startups');
+                    }
+                  }
+                });
+            }
+            //while(count < 5) {
+            //    status.message("count: " + count);
+            //}
+            //status.success("Hell yeah");
+        },
+        error: function(error) {
+            console.log(error);
+            status.error("done fucked up");
+        }
+    });
+ 
+});
+ 
+Parse.Cloud.job("formatRawData", function(request, status) {
+    Parse.Cloud.run('grabLastFormattedStartup', {}, {
+        success: function(result) {
+            var query = new Parse.Query("RawStartups");
+            //query.limit(1000);
+            query.greaterThan("idNum", result);
+            query.each(function(startup) {
+                Parse.Cloud.run('saveFormattedStartup', { currentStartup: JSON.parse(startup.get('fullData')) }, {
+                    success: function(result) {
+                        //console.log(result);
+                        status.message(result);
+                    },
+                    error: function(error) {
+                        //console.log(error);
+                        //status.error(error);
+                        status.message("saveFormattedError: " + error);
+                    }
+                });
+            }).then(function() {
+            // Set the job's success status
+                status.success("Migration completed successfully.");
+            }, function(error) {
+            // Set the job's error status
+                status.error("Uh oh, something went wrong: " + error);
+            });
+          },
+        error: function(error) {
+            status.error("grabLastError: " + error);
+        }
+    });    
+});
+ 
+Parse.Cloud.define("addFundraisingToStartup", function(request, response) {
+    Parse.Cloud.httpRequest({
+        url: ('https://api.angel.co/1/startups/' + request.params.currentStartup),
+        //params: {
+        //  q : 'Sean Plott'
+        //},
+        success: function(httpResponse) {
+            var TestObject = Parse.Object.extend("RawStartups");
+            var testObject = new TestObject();
+            testObject.save({ fullData: httpResponse.text, idNum: parseInt(request.params.currentStartup) }, {
+              success: function(object) {
+                response.success("yay! it worked");
+              },
+              error: function(error) {
+                response.error("didnt work");
+              }
+            });
+            //response.success(httpResponse.text);
+        },
+        error: function(httpResponse) {
+            response.error('Request failed with response code ' + httpResponse.status);
+        }
+    });
+    //response.success(startups);
+ 
+});
+ 
+Parse.Cloud.define("addFounderToStartup", function(request, response) {
+    Parse.Cloud.httpRequest({
+        url: ('https://api.angel.co/1/startups/' + parseInt(request.params.currentStartup) + '/roles'),
+        params: {
+            client_id : 'df2da713aa63eb3c828a32528bfd968e',
+            client_secret : '415d1bbd69a91f604c5eeea1d76754cb',
+            code : 'd3b5d5ec5665680372b9795723fafbfc',
+            grant_type : 'authorization_code'
+        },
+        success: function(httpResponse) {
+            //startup.set("founder_bio", httpResponse.text);
+            //startup.save();
+            //response.success('hello world');
+            var obj = $.parseJSON(httpResponse.text);
+            response.success(obj);
+            //response.success(_.filter(obj.startup_roles, function (employee) { return employee.role == "founder" }));
+            //response.success(httpResponse.text.startup_roles[0].tagged.bio);
+        },
+        error: function(httpResponse) {
+            response.error($.parseJSON(httpResponse.text));
+        }
+    });
+});
+ 
+ 
+Parse.Cloud.job("addFoundersToStartup", function(request, status) {
+    // Query for all users
+    var query = new Parse.Query("FormattedStartup");
+    query.equalTo("founder_bios", []);
+    query.each(function(startup) {
+        //startup.numId
+        // Update to plan value passed in
+        Parse.Cloud.run('addFounderToStartup', { currentStartup: startup.numId }, {
+            success: function(result) {
+                console.log(result);
+                //status.message(result);
+                status.success();
+            },
+            error: function(error) {
+                console.log(error);
+                status.error(error);
+            }
+        });
+    }).then(function() {
+    // Set the job's success status
+        //status.success("Migration completed successfully.");
+    }, function(error) {
+    // Set the job's error status
+        status.error("Uh oh, something went wrong.");
+    });
+ 
+    //response.success(startups);
+ 
+});
+ 
+/*
+Parse.Cloud.job("userMigration", function(request, status) {
+  // Set up to modify user data
+  Parse.Cloud.useMasterKey();
+  var counter = 0;
+  // Query for all users
+  var query = new Parse.Query(Parse.User);
+  query.each(function(user) {
+      // Update to plan value passed in
+      user.set("plan", request.params.plan);
+      if (counter % 100 === 0) {
+        // Set the  job's progress status
+        status.message(counter + " users processed.");
+      }
+      counter += 1;
+      return user.save();
+  }).then(function() {
+    // Set the job's success status
+    status.success("Migration completed successfully.");
+  }, function(error) {
+    // Set the job's error status
+    status.error("Uh oh, something went wrong.");
+  });
+});
+*/
 

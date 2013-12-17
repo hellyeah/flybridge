@@ -158,6 +158,7 @@ function AngelList($scope) {
         //**order the query by idNum?
         //query.equalTo("playerName", "Dan Stemkoski");
         query.greaterThan("idNum", parseInt($scope.lastFormattedStartup));
+        query.limit(1000);
         query.find({
           success: function(results) {
             alert("Successfully retrieved " + results.length + " startups.");
@@ -209,9 +210,13 @@ function AngelList($scope) {
     $scope.formatAndSaveData = function (data) {
         //formats data so that it can be downloaded as an excel file and saves it somewhere (filepicker?)
         //has full data
+        //console.log(data[1]);
+        //console.log(JSON.parse(data[1]));
+        //console.log(JSON.parse(data[1]).community_profile);
+        //$scope.saveFormattedStartup(JSON.parse(data[1]));
         for (var i = 0; i < data.length; i++) {
             var startupJSON = JSON.parse(data[i]);
-            //console.log(startupJSON);
+            console.log(startupJSON);
             /*
             $scope.formattedStartupsArray[i] = 
             {
@@ -252,7 +257,7 @@ function AngelList($scope) {
 
     $scope.formatData = function () {
         console.log('hit format data');
-        console.log($scope.startupsArray);
+        //console.log($scope.startupsArray);
         $scope.formatAndSaveData($scope.startupsArray);
     }
 
