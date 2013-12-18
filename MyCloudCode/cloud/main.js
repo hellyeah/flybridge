@@ -5,6 +5,42 @@ Parse.Cloud.define("hello", function(request, response) {
   response.success("Hello world!");
 });
 
+Parse.Cloud.define("printStartingThursday", function(request, response) {
+    var moment = require('moment');
+
+    var thursdayBeforeThisWeek = moment().day(-3);
+    var twoThursdaysAgo = moment().day(-3).subtract('days', 7);
+
+    //response.success(Date.parse(twoThursdaysAgo));
+    var thursday = require('cloud/startingThursday.js');
+    response.success(Date.parse(thursday.getStartingThursday(request.params.blah)));
+
+});
+
+Parse.Cloud.define("grabThousandFormattedStartups", function(request, response) {
+    //grabs all formatted startups from our database
+    var query = new Parse.Query("FormattedStartup");
+        //query.equalTo("idNum", parseInt(request.params.startupId));
+        //response.success(parseInt(request.params.startupId));
+    var thursday = require('cloud/startingThursday.js');
+    //Date.parse(thursday.getStartingThursday(request.params.weeksBack));
+
+    query.limit(1000);
+    //query.descending("idNum");
+    query.lessThan("created_at", thursday.getStartingThursday(request.params.weeksBack-1));
+    query.greaterThan("created_at", thursday.getStartingThursday(request.params.weeksBack));
+    //which pagination of 1000 we are on
+    query.skip(1000*request.params.iteration);
+    query.find({
+        success: function(results) {
+          response.success(results);
+        },
+        error: function() {
+          response.error("startup lookup failed");
+        }
+    });
+});
+
 //Call angellist api to grab one single startup -- will probably have to give index to grab from
 /*
 var getStartupAtIndex = function (index) {
@@ -195,24 +231,6 @@ Parse.Cloud.define("grabSpecificStartupFromParse", function(request, response) {
         query.first({
         success: function(object) {
           response.success(object);
-        },
-        error: function() {
-          response.error("startup lookup failed");
-        }
-    });
-});
-
-Parse.Cloud.define("grabAllFormattedStartups", function(request, response) {
-    //grabs all formatted startups from our database
-    var query = new Parse.Query("FormattedStartup");
-        //query.equalTo("idNum", parseInt(request.params.startupId));
-        //response.success(parseInt(request.params.startupId));
-    query.limit(1000);
-    query.descending("idNum");
-    query.skip(1000*request.params.iteration);
-    query.find({
-        success: function(results) {
-          response.success(results);
         },
         error: function() {
           response.error("startup lookup failed");

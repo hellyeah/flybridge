@@ -19,8 +19,9 @@
 				<button class="pure-button pure-button-primary" ng-click="download()">
 					Download Data
 				</button>
-				<button class="pure-button pure-button-primary" ng-click="grabFreshTestData()">
-					Grab Test Data
+				<input type="text" ng-model="userNumberOfWeeksBack" placeholder="# of weeks back -- default is 1">
+				<button class="pure-button pure-button-primary" ng-click="getStartingThursday()">
+					Grab Thursday
 				</button>
 				<button class="pure-button pure-button-primary" ng-click="formatData()">
 					Format Data

@@ -29,6 +29,30 @@ function AngelList($scope) {
         }
     }
 
+    $scope.numberOfWeeksBack = function () {
+        if ($scope.userNumberOfWeeksBack == undefined) {
+            return 1;
+        }
+        else {
+            console.log('returned user number of weeks back');
+            return $scope.userNumberOfWeeksBack;
+        }
+    }
+
+    $scope.getStartingThursday = function () {
+        Parse.Cloud.run('printStartingThursday', {blah: $scope.numberOfWeeksBack()}, {
+          success: function(result) {
+            console.log('starting thursday: '); 
+            console.log(result);
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });  
+    }
+
+    $scope.getStartingThursday();
+
     $scope.setLastStartups = function () {
         Parse.Cloud.run('grabLastStartup', {}, {
           success: function(result) {
@@ -53,31 +77,26 @@ function AngelList($scope) {
 
     $scope.setLastStartups();
 
-
-    //Pulls data from AngelList -- n is how many items we want to pull -- 302500
-    $scope.pullSomeAngelListData = function (n) {
-        var i = 0;
-        for(var i = 0; i < n; i++) {
-            console.log(i + parseInt($scope.lastStartupInParse));
-            Parse.Cloud.run('grabAndSaveStartup', { currentStartup: (i + parseInt($scope.lastStartupInParse)) }, {
-              success: function(result) {
-                console.log(result);
-              },
-              error: function(error) {
-                console.log(error);
-              }
-            });         
-        }
-    }
-
-    $scope.pullAngelListData = function () {
-        console.log('pressed grab data');
-        $scope.pullSomeAngelListData($scope.numberOfAL())
+    $scope.grabInitialFormattedStartupsFromParse = function () {
+        console.log('grabbing formatted startups');
+        Parse.Cloud.run('grabThousandFormattedStartups', {iteration: 0, weeksBack: $scope.numberOfWeeksBack()}, {
+          success: function(result) {
+            //console.log(result);
+            //console.log(result[0].attributes);
+            console.log(_.map(result, function(rawParseStartup) { return rawParseStartup.attributes; }));
+            //$scope.lastStartupInParse = result[0].attributes.idNum;
+            $scope.formattedStartupsArray = _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
+            return _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });
     }
 
     $scope.grabInitialFormattedStartupsFromParse = function () {
-        console.log('grabbing formatted startups');
-        Parse.Cloud.run('grabAllFormattedStartups', {}, {
+        console.log('grabbing formatted startups for week');
+        Parse.Cloud.run('grabThousandFormattedStartups', {iteration: 0, weeksBack: $scope.numberOfWeeksBack()}, {
           success: function(result) {
             //console.log(result);
             //console.log(result[0].attributes);
@@ -153,6 +172,34 @@ function AngelList($scope) {
     }
 
     $scope.grabFreshTestData = function () {
+        var GameScore = Parse.Object.extend("RawStartups");
+        var query = new Parse.Query(GameScore);
+        //**order the query by idNum?
+        //query.equalTo("playerName", "Dan Stemkoski");
+        query.greaterThan("idNum", parseInt($scope.lastFormattedStartup));
+        query.limit(1000);
+        query.find({
+          success: function(results) {
+            alert("Successfully retrieved " + results.length + " startups.");
+            // Do something with the returned Parse.Object values
+            for (var i = 0; i < results.length; i++) { 
+                //console.log(results[i].get('fullData'));
+                if (results[i].get('fullData')) {
+                    $scope.startupsArray.push(results[i].get('fullData'));
+                }
+                //alert(object.id + ' - ' + object.get('playerName'));
+            }
+          },
+          error: function(error) {
+            alert("Error: " + error.code + " " + error.message);
+          }
+        });
+    }
+
+    //grabs startups for a given week -- default is 1
+    //1 would be two thursdays ago to this most recent thursday
+    //2 would be 
+    $scope.grabStartupsForWeek = function (n) {
         var GameScore = Parse.Object.extend("RawStartups");
         var query = new Parse.Query(GameScore);
         //**order the query by idNum?
