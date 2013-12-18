@@ -18,17 +18,24 @@ Parse.Cloud.define("printStartingThursday", function(request, response) {
 });
 
 Parse.Cloud.define("grabThousandFormattedStartups", function(request, response) {
+    var moment = require('moment');
     //grabs all formatted startups from our database
     var query = new Parse.Query("FormattedStartup");
         //query.equalTo("idNum", parseInt(request.params.startupId));
         //response.success(parseInt(request.params.startupId));
     var thursday = require('cloud/startingThursday.js');
+    var startingThursday = thursday.getStartingThursday(request.params.weeksBack);
+    var startDate = new Date(startingThursday);
+    var endDate = new Date(thursday.getStartingThursday(request.params.weeksBack-1));
+    query.lessThan("createdAt", endDate);
+    query.greaterThan("createdAt", startDate);
     //Date.parse(thursday.getStartingThursday(request.params.weeksBack));
 
     query.limit(1000);
     //query.descending("idNum");
-    query.lessThan("created_at", thursday.getStartingThursday(request.params.weeksBack-1));
-    query.greaterThan("created_at", thursday.getStartingThursday(request.params.weeksBack));
+    
+
+
     //which pagination of 1000 we are on
     query.skip(1000*request.params.iteration);
     query.find({
@@ -37,6 +44,39 @@ Parse.Cloud.define("grabThousandFormattedStartups", function(request, response) 
         },
         error: function() {
           response.error("startup lookup failed");
+        }
+    });
+});
+
+Parse.Cloud.define("grabThousandFormattedStartupsThurs", function(request, response) {
+    var moment = require('moment');
+    //grabs all formatted startups from our database
+    var query = new Parse.Query("FormattedStartup");
+        //query.equalTo("idNum", parseInt(request.params.startupId));
+        //response.success(parseInt(request.params.startupId));
+    var thursday = require('cloud/startingThursday.js');
+    var startingThursday = thursday.getStartingThursday(request.params.weeksBack);
+    var startDate = new Date(startingThursday);
+    var endDate = new Date(thursday.getStartingThursday(request.params.weeksBack-1));
+    //query.lessThan("createdAt", endDate);
+    query.greaterThan("createdAt", startDate);
+    //response.success(endDate);
+    response.success(Date.parse(endDate));
+    //Date.parse(thursday.getStartingThursday(request.params.weeksBack));
+
+    query.limit(1000);
+    query.descending("idNum");
+    
+
+
+    //which pagination of 1000 we are on
+    query.skip(1000*request.params.iteration);
+    query.find({
+        success: function(results) {
+          //response.success(results);
+        },
+        error: function() {
+          //response.error("startup lookup failed");
         }
     });
 });

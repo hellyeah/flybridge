@@ -49,6 +49,15 @@ function AngelList($scope) {
             console.log(error);
           }
         });  
+        Parse.Cloud.run('grabThousandFormattedStartupsThurs', {iteration: 0, weeksBack: 1}, {
+          success: function(result) {
+            console.log('starting thursday from formatted: '); 
+            console.log(result);
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });  
     }
 
     $scope.getStartingThursday();
@@ -94,8 +103,10 @@ function AngelList($scope) {
         });
     }
 
-    $scope.grabInitialFormattedStartupsFromParse = function () {
+    $scope.grabAllFormattedStartupsFromParse = function () {
         console.log('grabbing formatted startups for week');
+        //resetting array from initial
+        $scope.formattedStartupsArray = [];
         Parse.Cloud.run('grabThousandFormattedStartups', {iteration: 0, weeksBack: $scope.numberOfWeeksBack()}, {
           success: function(result) {
             //console.log(result);
