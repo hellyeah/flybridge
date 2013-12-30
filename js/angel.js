@@ -39,6 +39,7 @@ function AngelList($scope) {
         }
     }
 
+<<<<<<< HEAD
     $scope.weeksBack = function () {
         if ($scope.userWeeksBack == undefined) {
             return 1;
@@ -48,6 +49,41 @@ function AngelList($scope) {
         }
     }
 
+=======
+    $scope.numberOfWeeksBack = function () {
+        if ($scope.userNumberOfWeeksBack == undefined) {
+            return 1;
+        }
+        else {
+            console.log('returned user number of weeks back');
+            return $scope.userNumberOfWeeksBack;
+        }
+    }
+
+    $scope.getStartingThursday = function () {
+        Parse.Cloud.run('printStartingThursday', {blah: $scope.numberOfWeeksBack()}, {
+          success: function(result) {
+            console.log('starting thursday: '); 
+            console.log(result);
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });  
+        Parse.Cloud.run('grabThousandFormattedStartupsThurs', {iteration: 0, weeksBack: 1}, {
+          success: function(result) {
+            console.log('starting thursday from formatted: '); 
+            console.log(result);
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });  
+    }
+
+    $scope.getStartingThursday();
+
+>>>>>>> 2d8c18c1129704ad5e6275b82583a6db1160b9c4
     $scope.setLastStartups = function () {
         Parse.Cloud.run('grabLastStartup', {}, {
           success: function(result) {
@@ -72,6 +108,7 @@ function AngelList($scope) {
 
     $scope.setLastStartups();
 
+<<<<<<< HEAD
 
     //Pulls data from AngelList -- n is how many items we want to pull -- 302500
     $scope.pullSomeAngelListData = function (n) {
@@ -108,9 +145,30 @@ function AngelList($scope) {
         $scope.pullSomeAngelListData($scope.numberOfAL())
     }
 
+=======
+>>>>>>> 2d8c18c1129704ad5e6275b82583a6db1160b9c4
     $scope.grabInitialFormattedStartupsFromParse = function () {
         console.log('grabbing formatted startups');
-        Parse.Cloud.run('grabAllFormattedStartups', {}, {
+        Parse.Cloud.run('grabThousandFormattedStartups', {iteration: 0, weeksBack: $scope.numberOfWeeksBack()}, {
+          success: function(result) {
+            //console.log(result);
+            //console.log(result[0].attributes);
+            console.log(_.map(result, function(rawParseStartup) { return rawParseStartup.attributes; }));
+            //$scope.lastStartupInParse = result[0].attributes.idNum;
+            $scope.formattedStartupsArray = _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
+            return _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });
+    }
+
+    $scope.grabAllFormattedStartupsFromParse = function () {
+        console.log('grabbing formatted startups for week');
+        //resetting array from initial
+        $scope.formattedStartupsArray = [];
+        Parse.Cloud.run('grabThousandFormattedStartups', {iteration: 0, weeksBack: $scope.numberOfWeeksBack()}, {
           success: function(result) {
             //console.log(result);
             //console.log(result[0].attributes);
@@ -127,7 +185,7 @@ function AngelList($scope) {
 
     $scope.grabAllFormattedStartups = function () {
         console.log('grabbing formatted startups');
-        Parse.Cloud.run('grabAllFormattedStartups', {}, {
+        Parse.Cloud.run('grabAllFormattedStartups', {iteration: 0}, {
           success: function(result) {
             //console.log(result);
             //console.log(result[0].attributes);
@@ -191,6 +249,35 @@ function AngelList($scope) {
         //**order the query by idNum?
         //query.equalTo("playerName", "Dan Stemkoski");
         query.greaterThan("idNum", parseInt($scope.lastFormattedStartup));
+        query.limit(1000);
+        query.find({
+          success: function(results) {
+            alert("Successfully retrieved " + results.length + " startups.");
+            // Do something with the returned Parse.Object values
+            for (var i = 0; i < results.length; i++) { 
+                //console.log(results[i].get('fullData'));
+                if (results[i].get('fullData')) {
+                    $scope.startupsArray.push(results[i].get('fullData'));
+                }
+                //alert(object.id + ' - ' + object.get('playerName'));
+            }
+          },
+          error: function(error) {
+            alert("Error: " + error.code + " " + error.message);
+          }
+        });
+    }
+
+    //grabs startups for a given week -- default is 1
+    //1 would be two thursdays ago to this most recent thursday
+    //2 would be 
+    $scope.grabStartupsForWeek = function (n) {
+        var GameScore = Parse.Object.extend("RawStartups");
+        var query = new Parse.Query(GameScore);
+        //**order the query by idNum?
+        //query.equalTo("playerName", "Dan Stemkoski");
+        query.greaterThan("idNum", parseInt($scope.lastFormattedStartup));
+        query.limit(1000);
         query.find({
           success: function(results) {
             alert("Successfully retrieved " + results.length + " startups.");
@@ -242,9 +329,13 @@ function AngelList($scope) {
     $scope.formatAndSaveData = function (data) {
         //formats data so that it can be downloaded as an excel file and saves it somewhere (filepicker?)
         //has full data
+        //console.log(data[1]);
+        //console.log(JSON.parse(data[1]));
+        //console.log(JSON.parse(data[1]).community_profile);
+        //$scope.saveFormattedStartup(JSON.parse(data[1]));
         for (var i = 0; i < data.length; i++) {
             var startupJSON = JSON.parse(data[i]);
-            //console.log(startupJSON);
+            console.log(startupJSON);
             /*
             $scope.formattedStartupsArray[i] = 
             {
@@ -285,7 +376,7 @@ function AngelList($scope) {
 
     $scope.formatData = function () {
         console.log('hit format data');
-        console.log($scope.startupsArray);
+        //console.log($scope.startupsArray);
         $scope.formatAndSaveData($scope.startupsArray);
     }
 
