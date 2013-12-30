@@ -1,19 +1,18 @@
 var coolNames = ['Ralph', 'Skippy', 'Chip', 'Ned', 'Scooter'];
-exports.isACoolName = function(name) {
-	//return 'blah';
-  //return coolNames.indexOf(name) !== -1;
-  //success: 
-	  Parse.Cloud.httpRequest({
-	    url: ('https://api.angel.co/1/startups/6702'),
-	    //params: {
-	    //  q : 'Sean Plott'
-	    //},
-	    success: function(httpResponse) {
-	        //console.log(httpResponse.text);
-	        return 'blah';
-	    },
-	    error: function(httpResponse) {
-	        console.error('Request failed with response code ' + httpResponse.status);
-	    }
-	  });
+exports.isACoolName = function(array) {
+	var str = '';
+    for (var i = 0; i < array.length; i++) {
+        var line = '';
+
+        for (var index in array[i]) {
+        	if(index == "name") {
+	            var value = array[i][index.toString()] + "";
+	            line += '"' + value.replace(/"/g, '""') + '",';
+        	}
+        }
+
+        line = line.slice(0, -1);
+        str += line + '\r\n';
+    }
+	return str;
 }

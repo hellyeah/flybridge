@@ -10,6 +10,16 @@ function AngelList($scope) {
     //default
     $scope.lastStartupInParse = 302500;
     $scope.lastFormattedStartup = 302500;
+    $scope.weeksBack = 1;
+
+    $scope.getLastThursday = function () {
+        var currentDay = new Date();
+        console.log(currentDay.getDay());
+        //thursday is 4
+        var daysFromStartingThursday = (4 - currentDay.getDay()) - (7*parseInt($scope.weeksBack()));
+        //subtract daysFromStartingThursday from the current date to get the date we should begin querying from
+        //will need to pass $scope.getLastThursday into download function
+    }
 
     $scope.numberOfStartups = function () {
         if ($scope.userNumberOfStartups == undefined) {
@@ -26,6 +36,15 @@ function AngelList($scope) {
         }
         else {
             return $scope.userNumberOfAL;
+        }
+    }
+
+    $scope.weeksBack = function () {
+        if ($scope.userWeeksBack == undefined) {
+            return 1;
+        }
+        else {
+            return $scope.userWeeksBack;
         }
     }
 
@@ -68,6 +87,20 @@ function AngelList($scope) {
               }
             });         
         }
+    }
+
+    $scope.test = function () {
+        Parse.Cloud.run('addFounderToStartup', {currentStartup: 6702}, {
+          success: function(result) {
+            //console.log(result);
+            //console.log(result[0].attributes);
+            console.log(result);
+            //console.log(obj[0]);
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });
     }
 
     $scope.pullAngelListData = function () {
@@ -178,7 +211,7 @@ function AngelList($scope) {
 
     $scope.grabSpecificStartup = function () {
         console.log('pressed grab data');
-        Parse.Cloud.run('grabSpecificStartup', { currentStartup: $scope.startupNumber }, {
+        Parse.Cloud.run('addFoundersToStartup', { currentStartup: $scope.startupNumber }, {
           success: function(result) {
             console.log(result);
           },
