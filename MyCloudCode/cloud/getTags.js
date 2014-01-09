@@ -10,7 +10,7 @@ exports.getTags = function(array) {
         }
     }
     if (tags == []) {
-        return "";
+        return ["null"];
     }
     else {
         return tags;        

@@ -162,9 +162,9 @@ Parse.Cloud.define("grabAndSaveStartup", function(request, response) {
 
     Parse.Cloud.httpRequest({
         url: ('https://api.angel.co/1/startups/' + request.params.currentStartup),
-        //params: {
-        //  q : 'Sean Plott'
-        //},
+        params: {
+          access_token : 'd3b5d5ec5665680372b9795723fafbfc'
+        },
         success: function(httpResponse) {
             var TestObject = Parse.Object.extend("RawStartups");
             var testObject = new TestObject();
@@ -248,9 +248,9 @@ Parse.Cloud.define("grabSpecificStartup", function(request, response) {
 
     Parse.Cloud.httpRequest({
         url: ('https://api.angel.co/1/startups/' + request.params.currentStartup),
-        //params: {
-        //  q : 'Sean Plott'
-        //},
+        params: {
+            access_token : 'd3b5d5ec5665680372b9795723fafbfc'
+        },
         success: function(httpResponse) {
             response.success(httpResponse.text);
         },

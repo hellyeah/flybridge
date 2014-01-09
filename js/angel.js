@@ -152,19 +152,21 @@ function AngelList($scope) {
         console.log('grabbing formatted startups for week');
         //resetting array from initial
         $scope.formattedStartupsArray = [];
-        Parse.Cloud.run('grabThousandFormattedStartups', {iteration: 0, weeksBack: $scope.numberOfWeeksBack()}, {
-          success: function(result) {
-            //console.log(result);
-            //console.log(result[0].attributes);
-            console.log(_.map(result, function(rawParseStartup) { return rawParseStartup.attributes; }));
-            //$scope.lastStartupInParse = result[0].attributes.idNum;
-            $scope.formattedStartupsArray = _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
-            return _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
-          },
-          error: function(error) {
-            console.log(error);
-          }
-        });
+        for(var i = 0; i < 3; i++) {
+            Parse.Cloud.run('grabThousandFormattedStartups', {iteration: i, weeksBack: $scope.numberOfWeeksBack()}, {
+              success: function(result) {
+                //console.log(result);
+                //console.log(result[0].attributes);
+                console.log(_.map(result, function(rawParseStartup) { return rawParseStartup.attributes; }));
+                //$scope.lastStartupInParse = result[0].attributes.idNum;
+                var thousandStartups = _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
+                $scope.formattedStartupsArray = $scope.formattedStartupsArray.concat(thousandStartups);
+              },
+              error: function(error) {
+                console.log(error);
+              }
+            });            
+        }
     }
 
     $scope.grabAllFormattedStartups = function () {
@@ -282,7 +284,8 @@ function AngelList($scope) {
 
     $scope.grabSpecificStartup = function () {
         console.log('pressed grab data');
-        Parse.Cloud.run('addFoundersToStartup', { currentStartup: $scope.startupNumber }, {
+        //Parse.Cloud.run('addFoundersToStartup', { currentStartup: $scope.startupNumber }, {
+        Parse.Cloud.run('grabSpecificStartup', { currentStartup: $scope.startupNumber }, {
           success: function(result) {
             console.log(result);
           },
@@ -408,7 +411,7 @@ function AngelList($scope) {
     $scope.download = function () {
         //grabs most recent data pulled as an excel file
         console.log('hit download');
-        console.log($scope.formattedStartupsArray);
+        //console.log($scope.formattedStartupsArray);
         $scope.downloadData($scope.formattedStartupsArray);
     };
 
