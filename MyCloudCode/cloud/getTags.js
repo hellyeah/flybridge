@@ -1,13 +1,18 @@
 exports.getTags = function(array) {
-        var tags = [];
+    var tags = [];
     for (var i = 0; i < array.length; i++) {
         var line = '';
 
         for (var index in array[i]) {
                 if(index == "name") {
-                    tags.push(array[i][index.toString()]);
+                    tags.push(" " + array[i][index.toString()]);
                 }
         }
     }
-        return tags;
+    if (tags == []) {
+        return "";
+    }
+    else {
+        return tags;        
+    }
 }
