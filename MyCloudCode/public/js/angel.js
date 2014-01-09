@@ -29,7 +29,6 @@ function AngelList($scope) {
         }
     }
 
-<<<<<<< HEAD
     $scope.setLastStartups = function () {
         Parse.Cloud.run('grabLastStartup', {}, {
           success: function(result) {
@@ -79,7 +78,7 @@ function AngelList($scope) {
     $scope.grabInitialFormattedStartupsFromParse = function () {
         console.log('grabbing formatted startups');
         Parse.Cloud.run('grabAllFormattedStartups', {}, {
-=======
+
     $scope.numberOfWeeksBack = function () {
         if ($scope.userNumberOfWeeksBack == undefined) {
             return 1;
@@ -163,15 +162,10 @@ function AngelList($scope) {
         //resetting array from initial
         $scope.formattedStartupsArray = [];
         Parse.Cloud.run('grabThousandFormattedStartups', {iteration: 0, weeksBack: $scope.numberOfWeeksBack()}, {
->>>>>>> 2d8c18c1129704ad5e6275b82583a6db1160b9c4
           success: function(result) {
             //console.log(result);
             //console.log(result[0].attributes);
             console.log(_.map(result, function(rawParseStartup) { return rawParseStartup.attributes; }));
-<<<<<<< HEAD
-=======
-            alert('Loaded startups. You can now download the csv.');
->>>>>>> 2d8c18c1129704ad5e6275b82583a6db1160b9c4
             //$scope.lastStartupInParse = result[0].attributes.idNum;
             $scope.formattedStartupsArray = _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
             return _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
@@ -184,11 +178,7 @@ function AngelList($scope) {
 
     $scope.grabAllFormattedStartups = function () {
         console.log('grabbing formatted startups');
-<<<<<<< HEAD
-        Parse.Cloud.run('grabAllFormattedStartups', {}, {
-=======
         Parse.Cloud.run('grabAllFormattedStartups', {iteration: 0}, {
->>>>>>> 2d8c18c1129704ad5e6275b82583a6db1160b9c4
           success: function(result) {
             //console.log(result);
             //console.log(result[0].attributes);
@@ -217,185 +207,6 @@ function AngelList($scope) {
         });  
     }
 
-    $scope.grabSomeFormattedStartups = function () {
-        console.log('grabbing formatted startups');
-        //will have to get paginated results working -- maybe move logic here and pass in skip on top of limit
-        Parse.Cloud.run('grabNumberOfFormattedStartups', {numberOfStartups: $scope.numberOfStartups()}, {
-          success: function(result) {
-            console.log(_.map(result, function(rawParseStartup) { return rawParseStartup.attributes; }));
-
-            $scope.formattedStartupsArray = [];
-            $scope.formattedStartupsArray = _.map(result, function(rawParseStartup) { return rawParseStartup.attributes; });
-          },
-          error: function(error) {
-            console.log(error);
-          }
-        });  
-    }
-
-    $scope.grabInitialFormattedStartupsFromParse();
-
-    $scope.saveFormattedStartup = function (startup) {
-        Parse.Cloud.run('saveFormattedStartup', { currentStartup: startup }, {
-          success: function(result) {
-            console.log(result);
-          },
-          error: function(error) {
-            console.log(error);
-          }
-        });  
-    }
-
-    $scope.grabFreshTestData = function () {
-        var GameScore = Parse.Object.extend("RawStartups");
-<<<<<<< HEAD
-=======
-        var query = new Parse.Query(GameScore);
-        //**order the query by idNum?
-        //query.equalTo("playerName", "Dan Stemkoski");
-        query.greaterThan("idNum", parseInt($scope.lastFormattedStartup));
-        query.limit(1000);
-        query.find({
-          success: function(results) {
-            alert("Successfully retrieved " + results.length + " startups.");
-            // Do something with the returned Parse.Object values
-            for (var i = 0; i < results.length; i++) { 
-                //console.log(results[i].get('fullData'));
-                if (results[i].get('fullData')) {
-                    $scope.startupsArray.push(results[i].get('fullData'));
-                }
-                //alert(object.id + ' - ' + object.get('playerName'));
-            }
-          },
-          error: function(error) {
-            alert("Error: " + error.code + " " + error.message);
-          }
-        });
-    }
-
-    //grabs startups for a given week -- default is 1
-    //1 would be two thursdays ago to this most recent thursday
-    //2 would be 
-    $scope.grabStartupsForWeek = function (n) {
-        var GameScore = Parse.Object.extend("RawStartups");
->>>>>>> 2d8c18c1129704ad5e6275b82583a6db1160b9c4
-        var query = new Parse.Query(GameScore);
-        //**order the query by idNum?
-        //query.equalTo("playerName", "Dan Stemkoski");
-        query.greaterThan("idNum", parseInt($scope.lastFormattedStartup));
-<<<<<<< HEAD
-=======
-        query.limit(1000);
->>>>>>> 2d8c18c1129704ad5e6275b82583a6db1160b9c4
-        query.find({
-          success: function(results) {
-            alert("Successfully retrieved " + results.length + " startups.");
-            // Do something with the returned Parse.Object values
-            for (var i = 0; i < results.length; i++) { 
-                //console.log(results[i].get('fullData'));
-                if (results[i].get('fullData')) {
-                    $scope.startupsArray.push(results[i].get('fullData'));
-                }
-                //alert(object.id + ' - ' + object.get('playerName'));
-            }
-          },
-          error: function(error) {
-            alert("Error: " + error.code + " " + error.message);
-          }
-        });
-    }
-
-    $scope.grabSpecificStartup = function () {
-        console.log('pressed grab data');
-        Parse.Cloud.run('grabSpecificStartup', { currentStartup: $scope.startupNumber }, {
-          success: function(result) {
-            console.log(result);
-          },
-          error: function(error) {
-            console.log(error);
-          }
-        });         
-    }
-
-    $scope.grabSpecificStartupFromParse = function () {
-        console.log('pressed grab data');
-        console.log($scope.formattedStartupNumber);
-        Parse.Cloud.run('grabSpecificStartupFromParse', { startupId: $scope.formattedStartupNumber }, {
-          success: function(result) {
-            console.log(result);
-          },
-          error: function(error) {
-            console.log(error);
-          }
-        });         
-    }
-    
-    //Pulls one page of data from AngelList
-    $scope.getDataFromIndex = function (index) {
-        //index is where we should start pulling the data from until we can't pull anymore (1000 items?)
-    }
-
-    $scope.formatAndSaveData = function (data) {
-        //formats data so that it can be downloaded as an excel file and saves it somewhere (filepicker?)
-        //has full data
-        //console.log(data[1]);
-        //console.log(JSON.parse(data[1]));
-        //console.log(JSON.parse(data[1]).community_profile);
-        //$scope.saveFormattedStartup(JSON.parse(data[1]));
-        for (var i = 0; i < data.length; i++) {
-            var startupJSON = JSON.parse(data[i]);
-<<<<<<< HEAD
-            //console.log(startupJSON);
-=======
-            console.log(startupJSON);
->>>>>>> 2d8c18c1129704ad5e6275b82583a6db1160b9c4
-            /*
-            $scope.formattedStartupsArray[i] = 
-            {
-                community_profile: startupJSON.community_profile,
-                angellist_url: startupJSON.angellist_url,
-                //still needs work
-                company_type: startupJSON.company_type,
-                company_url: startupJSON.company_url,
-                created_at: startupJSON.created_at,
-                crunchbase_url: startupJSON.crunchbase_url,
-                follower_count: startupJSON.follower_count,
-                hidden: startupJSON.hidden,
-                high_concept: startupJSON.high_concept,
-                idNum: startupJSON.id,
-                //still needs work
-                locations: startupJSON.locations,
-                logo_url: startupJSON.logo_url,
-                //**Still needs work
-                markets: startupJSON.markets,
-                name: startupJSON.name,
-                product_desc: startupJSON.product_desc,
-                quality: startupJSON.quality,
-                //still needs work
-                screenshots: startupJSON.screenshots,
-                status: startupJSON.status,
-                thumb_url: startupJSON.thumb_url,
-                twitter_url: startupJSON.twitter_url,
-                updated_at: startupJSON.updated_at,
-                video_url: startupJSON.video_url
-            }
-            */
-            //console.log($scope.formattedStartupsArray[i]);
-            $scope.saveFormattedStartup(startupJSON);
-        }
-        //console.log($scope.formattedStartupsArray);
-        
-    }
-
-    $scope.formatData = function () {
-        console.log('hit format data');
-<<<<<<< HEAD
-        console.log($scope.startupsArray);
-=======
-        //console.log($scope.startupsArray);
->>>>>>> 2d8c18c1129704ad5e6275b82583a6db1160b9c4
-        $scope.formatAndSaveData($scope.startupsArray);
-    }
 
     $scope.JSON2CSV = function (objArray) {
         var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;

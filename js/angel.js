@@ -39,17 +39,6 @@ function AngelList($scope) {
         }
     }
 
-<<<<<<< HEAD
-    $scope.weeksBack = function () {
-        if ($scope.userWeeksBack == undefined) {
-            return 1;
-        }
-        else {
-            return $scope.userWeeksBack;
-        }
-    }
-
-=======
     $scope.numberOfWeeksBack = function () {
         if ($scope.userNumberOfWeeksBack == undefined) {
             return 1;
@@ -83,7 +72,6 @@ function AngelList($scope) {
 
     $scope.getStartingThursday();
 
->>>>>>> 2d8c18c1129704ad5e6275b82583a6db1160b9c4
     $scope.setLastStartups = function () {
         Parse.Cloud.run('grabLastStartup', {}, {
           success: function(result) {
@@ -107,8 +95,6 @@ function AngelList($scope) {
     }
 
     $scope.setLastStartups();
-
-<<<<<<< HEAD
 
     //Pulls data from AngelList -- n is how many items we want to pull -- 302500
     $scope.pullSomeAngelListData = function (n) {
@@ -145,8 +131,6 @@ function AngelList($scope) {
         $scope.pullSomeAngelListData($scope.numberOfAL())
     }
 
-=======
->>>>>>> 2d8c18c1129704ad5e6275b82583a6db1160b9c4
     $scope.grabInitialFormattedStartupsFromParse = function () {
         console.log('grabbing formatted startups');
         Parse.Cloud.run('grabThousandFormattedStartups', {iteration: 0, weeksBack: $scope.numberOfWeeksBack()}, {
