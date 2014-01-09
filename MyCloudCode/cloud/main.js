@@ -4,8 +4,81 @@ Parse.Cloud.define("hello", function(request, response) {
   response.success("Hello world!");
 });
 
-var access_token= '';
-var moment = require('moment');
+Parse.Cloud.define("printStartingThursday", function(request, response) {
+    var moment = require('moment');
+
+    var thursdayBeforeThisWeek = moment().day(-3);
+    var twoThursdaysAgo = moment().day(-3).subtract('days', 7);
+
+    //response.success(Date.parse(twoThursdaysAgo));
+    var thursday = require('cloud/startingThursday.js');
+    response.success(Date.parse(thursday.getStartingThursday(request.params.blah)));
+
+});
+
+Parse.Cloud.define("grabThousandFormattedStartups", function(request, response) {
+    var moment = require('moment');
+    //grabs all formatted startups from our database
+    var query = new Parse.Query("FormattedStartup");
+        //query.equalTo("idNum", parseInt(request.params.startupId));
+        //response.success(parseInt(request.params.startupId));
+    var thursday = require('cloud/startingThursday.js');
+    var startingThursday = thursday.getStartingThursday(request.params.weeksBack);
+    var startDate = new Date(startingThursday);
+    var endDate = new Date(thursday.getStartingThursday(request.params.weeksBack-1));
+    query.lessThan("createdAt", endDate);
+    query.greaterThan("createdAt", startDate);
+    //Date.parse(thursday.getStartingThursday(request.params.weeksBack));
+
+    query.limit(1000);
+    //query.descending("idNum");
+    
+
+
+    //which pagination of 1000 we are on
+    query.skip(1000*request.params.iteration);
+    query.find({
+        success: function(results) {
+          response.success(results);
+        },
+        error: function() {
+          response.error("startup lookup failed");
+        }
+    });
+});
+
+Parse.Cloud.define("grabThousandFormattedStartupsThurs", function(request, response) {
+    var moment = require('moment');
+    //grabs all formatted startups from our database
+    var query = new Parse.Query("FormattedStartup");
+        //query.equalTo("idNum", parseInt(request.params.startupId));
+        //response.success(parseInt(request.params.startupId));
+    var thursday = require('cloud/startingThursday.js');
+    var startingThursday = thursday.getStartingThursday(request.params.weeksBack);
+    var startDate = new Date(startingThursday);
+    var endDate = new Date(thursday.getStartingThursday(request.params.weeksBack-1));
+    //query.lessThan("createdAt", endDate);
+    query.greaterThan("createdAt", startDate);
+    //response.success(endDate);
+    response.success(Date.parse(endDate));
+    //Date.parse(thursday.getStartingThursday(request.params.weeksBack));
+
+    query.limit(1000);
+    query.descending("idNum");
+    
+
+
+    //which pagination of 1000 we are on
+    query.skip(1000*request.params.iteration);
+    query.find({
+        success: function(results) {
+          //response.success(results);
+        },
+        error: function() {
+          //response.error("startup lookup failed");
+        }
+    });
+});
 
 //Call angellist api to grab one single startup -- will probably have to give index to grab from
 /*
@@ -26,62 +99,6 @@ var getStartupAtIndex = function (index) {
 }
 */
 
-
-/*
-GET https://angel.co/api/oauth/authorize?
-    client_id=...&
-    response_type=code
-*/
-
-Parse.Cloud.define("userAngelAuth", function(request, response) {
-    //grab access token: Access tokens never expire, unless they're revoked by the user.
-    Parse.Cloud.httpRequest({
-        url: 'https://angel.co/api/oauth/authorize',
-        params: {
-          client_id : 'df2da713aa63eb3c828a32528bfd968e',
-          response_type : 'code'
-        },
-        success: function(httpResponse) {
-            response.success(httpResponse.url);
-                //httpResponse.text);
-        },
-        error: function(httpResponse) {
-            response.error('Request failed with response code ' + httpResponse.status);
-        }
-    });
-    //response.success(startups);
-
-});
-
-/*
-POST https://angel.co/api/oauth/token?
-     client_id=...&
-     client_secret=...&
-     code=...&
-     grant_type=authorization_code
-*/
-
-Parse.Cloud.define("requestAngelAuth", function(request, response) {
-    //grab access token: Access tokens never expire, unless they're revoked by the user.
-
-    Parse.Cloud.httpRequest({
-        url: ('https://angel.co/api/oauth/token?' + (lastStartup + request.params.currentStartup)),
-        params: {
-          client_id : 'df2da713aa63eb3c828a32528bfd968e',
-          client_secret : '415d1bbd69a91f604c5eeea1d76754cb',
-          code : '',
-          grant_type : 'authorization_code'
-        },
-        success: function(httpResponse) {
-            response.success(httpResponse.text);
-        },
-        error: function(httpResponse) {
-            response.error('Request failed with response code ' + httpResponse.status);
-        }
-    });
-    //response.success(startups);
-
-});
 
 Parse.Cloud.define("grabStartup", function(request, response) {
     //grab this as the id of the last startup in our database
@@ -169,20 +186,18 @@ Parse.Cloud.define("grabAndSaveStartup", function(request, response) {
 
 });
 
-//community, company name, angellist URL, high concept, description, signal/quality, markets, location ... everything else
-
 Parse.Cloud.define("saveFormattedStartup", function(request, response) {
     //save this request.params.currentStartup
     var tags = require('cloud/getTags.js');
 
     var currentStartup = request.params.currentStartup;
     var startupJSON = currentStartup;
-    //moment(startupJSON.created_at, "YYYY-MM-DD")
+    //response.success(startupJSON);
     //**should getTags return a string of comma separated values or an array?
 
     //response.success(startupJSON.id);
     if (startupJSON.hidden) {
-        response.error('startup hidden');
+        response.success('startup hidden');
     }
     else {
         var TestObject = Parse.Object.extend("FormattedStartup");
@@ -197,23 +212,17 @@ Parse.Cloud.define("saveFormattedStartup", function(request, response) {
                     markets: tags.getTags(startupJSON.markets),
                     locations: tags.getTags(startupJSON.locations),
                     //still needs work
-                    founder_bio: '',
                     company_type: tags.getTags(startupJSON.company_type),
                     company_url: startupJSON.company_url,
-                    created_at: moment(startupJSON.created_at, "YYYY-MM-DD"),
+                    created_at: startupJSON.created_at,
                     crunchbase_url: startupJSON.crunchbase_url,
                     follower_count: startupJSON.follower_count,
                     //hidden: startupJSON.hidden,
-                    
                     idNum: startupJSON.id,
                     //still needs work
-                    
                     logo_url: startupJSON.logo_url,
                     //**Still needs work
-                    
-                    
-                    
-                    
+                    product_desc: startupJSON.product_desc,
                     //still needs work
                     screenshots: tags.getTags(startupJSON.screenshots),
                     status: startupJSON.status,
@@ -226,7 +235,7 @@ Parse.Cloud.define("saveFormattedStartup", function(request, response) {
             response.success("yay! it worked");
           },
           error: function(error) {
-            response.error(startupJSON);
+            response.error("didnt work");
           }
         });
     }
@@ -261,27 +270,6 @@ Parse.Cloud.define("grabSpecificStartupFromParse", function(request, response) {
         query.first({
         success: function(object) {
           response.success(object);
-        },
-        error: function() {
-          response.error("startup lookup failed");
-        }
-    });
-});
-
-Parse.Cloud.define("grabAllFormattedStartups", function(request, response) {
-    //grabs all formatted startups from our database
-    //grab most previous thursday to thursday
-    var thursday = require('cloud/startingThursday.js');
-    //**the 0 can be replaced by the number of weeks back you want to go
-    var startingThursday = thursday.getStartingThursday(0);
-
-    var query = new Parse.Query("FormattedStartup");
-        //query.equalTo("idNum", parseInt(request.params.startupId));
-        //response.success(parseInt(request.params.startupId));
-    query.descending("idNum");
-    query.find({
-        success: function(results) {
-          response.success(results);
         },
         error: function() {
           response.error("startup lookup failed");
@@ -366,7 +354,6 @@ Parse.Cloud.beforeSave("Critic", function(request, response) {
   response.success();  
 });
 
-
 //background job to grab data from AngelList Every Day and then format it
 Parse.Cloud.job("pullRawData", function(request, status) {
     // Set up to modify user data
@@ -409,23 +396,25 @@ Parse.Cloud.job("pullRawData", function(request, status) {
             status.error("done fucked up");
         }
     });
-
+ 
 });
-
+ 
 Parse.Cloud.job("formatRawData", function(request, status) {
     Parse.Cloud.run('grabLastFormattedStartup', {}, {
         success: function(result) {
             var query = new Parse.Query("RawStartups");
+            //query.limit(1000);
             query.greaterThan("idNum", result);
             query.each(function(startup) {
                 Parse.Cloud.run('saveFormattedStartup', { currentStartup: JSON.parse(startup.get('fullData')) }, {
                     success: function(result) {
-                        console.log(result);
+                        //console.log(result);
                         status.message(result);
                     },
                     error: function(error) {
-                        console.log(error);
+                        //console.log(error);
                         //status.error(error);
+                        status.message("saveFormattedError: " + error);
                     }
                 });
             }).then(function() {
@@ -433,15 +422,15 @@ Parse.Cloud.job("formatRawData", function(request, status) {
                 status.success("Migration completed successfully.");
             }, function(error) {
             // Set the job's error status
-                status.error("Uh oh, something went wrong.");
+                status.error("Uh oh, something went wrong: " + error);
             });
           },
-          error: function(error) {
-            console.log(error);
-          }
+        error: function(error) {
+            status.error("grabLastError: " + error);
+        }
     });    
 });
-
+ 
 Parse.Cloud.define("addFundraisingToStartup", function(request, response) {
     Parse.Cloud.httpRequest({
         url: ('https://api.angel.co/1/startups/' + request.params.currentStartup),
@@ -466,9 +455,9 @@ Parse.Cloud.define("addFundraisingToStartup", function(request, response) {
         }
     });
     //response.success(startups);
-
+ 
 });
-
+ 
 Parse.Cloud.define("addFounderToStartup", function(request, response) {
     Parse.Cloud.httpRequest({
         url: ('https://api.angel.co/1/startups/' + parseInt(request.params.currentStartup) + '/roles'),
@@ -492,8 +481,8 @@ Parse.Cloud.define("addFounderToStartup", function(request, response) {
         }
     });
 });
-
-
+ 
+ 
 Parse.Cloud.job("addFoundersToStartup", function(request, status) {
     // Query for all users
     var query = new Parse.Query("FormattedStartup");
@@ -519,11 +508,11 @@ Parse.Cloud.job("addFoundersToStartup", function(request, status) {
     // Set the job's error status
         status.error("Uh oh, something went wrong.");
     });
-
+ 
     //response.success(startups);
-
+ 
 });
-
+ 
 /*
 Parse.Cloud.job("userMigration", function(request, status) {
   // Set up to modify user data

@@ -75,10 +75,6 @@ function AngelList($scope) {
         $scope.pullSomeAngelListData($scope.numberOfAL())
     }
 
-    $scope.grabInitialFormattedStartupsFromParse = function () {
-        console.log('grabbing formatted startups');
-        Parse.Cloud.run('grabAllFormattedStartups', {}, {
-
     $scope.numberOfWeeksBack = function () {
         if ($scope.userNumberOfWeeksBack == undefined) {
             return 1;
