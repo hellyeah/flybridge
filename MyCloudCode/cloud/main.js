@@ -214,7 +214,7 @@ Parse.Cloud.define("saveFormattedStartup", function(request, response) {
                     //still needs work
                     company_type: tags.getTags(startupJSON.company_type),
                     company_url: startupJSON.company_url,
-                    created_at: startupJSON.created_at,
+                    created_at: startupJSON.created_at.substring(0,10),
                     crunchbase_url: startupJSON.crunchbase_url,
                     follower_count: startupJSON.follower_count,
                     //hidden: startupJSON.hidden,
@@ -228,7 +228,7 @@ Parse.Cloud.define("saveFormattedStartup", function(request, response) {
                     status: startupJSON.status,
                     thumb_url: startupJSON.thumb_url,
                     twitter_url: startupJSON.twitter_url,
-                    updated_at: startupJSON.updated_at,
+                    updated_at: startupJSON.updated_at.substring(0,10),
                     video_url: startupJSON.video_url
                 }, {
           success: function(object) {

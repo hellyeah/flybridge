@@ -405,6 +405,17 @@ function AngelList($scope) {
 
     $scope.downloadData = function(jsonVal) {
         var csv = $scope.JSON2CSV(jsonVal);
+        /*
+        var uri = 'data:text/csv;charset=utf-8,' + csv;
+
+        var downloadLink = document.createElement("a");
+        downloadLink.href = uri;
+        downloadLink.download = "data.csv";
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        */
         window.open("data:text/csv;charset=utf-8," + escape(csv));
     };
 
